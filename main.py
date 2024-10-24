@@ -13,7 +13,7 @@ WINDOW_SIZE = (1400, 736)
 FRAME_RATE = 120
 
 Cars = []
-POPULATION = 100
+POPULATION = 1
 
 if __name__ == "__main__":
     print("halo")
@@ -27,6 +27,7 @@ if __name__ == "__main__":
     screen = pygame.display.set_mode(WINDOW_SIZE)
     bg= pygame.image.load(TRACK)
     
+
 
     
     while True:

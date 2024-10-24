@@ -1,6 +1,7 @@
 import pygame
 from pygame.math import Vector2
 from math import asin
+import numpy as np
 
 SPRITE_PATH = "assets/car.png"
 CAR_SIZE  = (30, 60)
@@ -19,7 +20,7 @@ next_id = 0
 
 class Car:
 
-    def __init__(self, pos:Vector2 , collisionmap, velocity = Vector2(0,0), angle = 0  ):
+    def __init__(self, pos:Vector2 , collisionmap, velocity = Vector2(0,0), angle = 0 , n_sensors = 5 ):
         global next_id
 
         self.id = next_id
@@ -33,6 +34,10 @@ class Car:
 
         self.collisionmap = collisionmap
         self.dead = False
+
+        self.n_sensors  =5
+        self.sensors_endpoints = [(pos[0], pos[1])] * n_sensors  # 5 car sensors
+        self.sensors_readings = [0] * n_sensors
 
 
     def draw(self, win):
@@ -48,6 +53,10 @@ class Car:
         win.blit(rot_image, dest=rot_rect)
 
 
+        for x, y in self.sensors_endpoints:
+            pygame.draw.line(win, (0,   0, 255), self.pos, (x, y), 1)
+
+
     def update(self, input_vector:Vector2, engine_pow: float,  dt):
 
         if not self.dead:
@@ -56,12 +65,28 @@ class Car:
 
 
             self.angle= self.velocity.angle_to(Vector2((0,-1)))
-
             if self.velocity.length() > CAR_MAX_VELOCITY:
             
                 self.velocity = self.velocity.normalize() * CAR_MAX_VELOCITY
 
             self.pos += self.velocity
 
+            alpha = ((self.angle) * np.pi / 180)% np.pi + np.pi
+            angle_v = 180 / (self.n_sensors - 1) * np.pi / 180 
+
+            for i in range(self.n_sensors):
+                vx = np.cos(angle_v * i - alpha)
+                vy = np.sin(angle_v * i - alpha)
+                tmp_x, tmp_y = self.pos[0], self.pos[1]
+                while self.collisionmap.getpixel((int(tmp_x + vx), int(tmp_y + vy))) == 0:
+                    tmp_x += vx
+                    tmp_y += vy
+
+                self.sensors_endpoints[i] = (tmp_x, tmp_y)
+                self.sensors_readings[i] = np.sqrt(
+                    (self.pos[0] - tmp_x) ** 2 + (self.pos[1] - tmp_y) ** 2
+                )
+            print(self.sensors_readings)
         if self.collisionmap.getpixel(self.pos) != 0:
             self.dead = True
+
