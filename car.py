@@ -86,7 +86,7 @@ class Car:
                 self.sensors_readings[i] = np.sqrt(
                     (self.pos[0] - tmp_x) ** 2 + (self.pos[1] - tmp_y) ** 2
                 )
-            print(self.sensors_readings)
+
         if self.collisionmap.getpixel(self.pos) != 0:
             self.dead = True
 

@@ -13,10 +13,10 @@ WINDOW_SIZE = (1400, 736)
 FRAME_RATE = 120
 
 Cars = []
-POPULATION = 1
+POPULATION = 100
 
 if __name__ == "__main__":
-    print("halo")
+
     pygame.init()
 
     Cars = [Car((350, 680), collisionmap = Image.open(COLLISION_MAP).convert('1')) for i in range(POPULATION)]
@@ -38,7 +38,7 @@ if __name__ == "__main__":
         screen.blit(bg, Vector2(0,0))
         [car.draw(screen) for car in Cars]
 
-        [car.update(Vector2(1, 0.1), random.random() ,clock.get_time()) for car in Cars]
+        [car.update(Vector2(1, 0.5), random.random() ,clock.get_time()) for car in Cars]
 
         pygame.display.update()
 
